@@ -1,0 +1,235 @@
+<mvc:View
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:f="sap.f"
+  xmlns="sap.m"
+  xmlns:uxap="sap.uxap"
+  xmlns:core="sap.ui.core"
+  controllerName="todoapp.controller.List">
+    
+  <f:FlexibleColumnLayout id="flexibleColumnLayout">
+    
+    <!-- Master Page (First Column) -->
+    <f:beginColumnPages>
+      <Page id="masterPage" title="{= 'All todos in the selected list: ' + ${selectedList>/data/name}}"
+            showNavButton="true" navButtonPress="onNavBack">
+        <subHeader>
+          <Toolbar>
+            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+              <HBox alignItems="Center">
+                <MessageStrip
+                        visible="{path: 'selectedList>/data/visibility', formatter: '.isListPrivate'}"
+                        text="This list is private"
+                        type="None"
+                        showIcon="true"
+                        width="auto"
+                        class="sapUiSmallMarginStart" />
+
+                <Button
+                        icon="sap-icon://add"
+                        text="Add new todo"
+                        press="onAddTodo"
+                        class="sapUiSmallMarginEnd"
+                        visible="{path: 'todos>/data', formatter: '.formatter.hasWriterAdminPer'}"/>
+
+                <Button
+                        icon="sap-icon://edit"
+                        text="Edit collaborators"
+                        press="onAddUser"
+                        visible="{path: 'selectedList>/data/visibility', formatter: '.isListShared'}"/>
+
+              </HBox>
+
+              <HBox>
+                <Button
+                        icon="sap-icon://edit"
+                        text="Edit list"
+                        type="Emphasized"
+                        press="onEditListPress"
+                        class="sapUiSmallMarginEnd"
+                        visible="{path: 'todos>/data', formatter: '.formatter.hasWriterAdminPer'}"/>
+
+                <Button
+                        icon="sap-icon://delete"
+                        text="Delete list"
+                        press="onDeletePress"
+                        visible="{path: 'todos>/data', formatter: '.formatter.hasWriterAdminPer'}"/>
+              </HBox>
+            </HBox>
+            <ToolbarSpacer />
+          </Toolbar>
+
+        </subHeader>
+        <content>
+          <VBox>
+          <Toolbar>
+            <Text text="Filter by Priority:" />
+            <Select id="priorityFilter" change="onPriorityChange">
+              <items>
+                <core:Item key="None" text="All" />
+                <core:Item key="High" text="High" />
+                <core:Item key="Medium" text="Medium" />
+                <core:Item key="Low" text="Low" />
+              </items>
+            </Select>
+            <Text text="Filter by Status:" />
+            <Select id="completedFilter" change="onCompletedChange">
+              <items>
+                <core:Item key="None" text="All" />
+                <core:Item key="Completed" text="Completed" />
+                <core:Item key="Uncompleted" text="Uncompleted" />
+              </items>
+            </Select>
+            <ToolbarSpacer />
+            <ProgressIndicator
+                    percentValue="{path: 'todos>/data', formatter: '.formatter.calculateCompletionPercentage'}"
+                    displayValue="{path: 'todos>/data', formatter: '.formatter.displayCompletionPercentage'}"
+                    width="25rem"
+                    state="Success"
+                    animateTextChange="true"/>
+            <OverflowToolbarButton icon="sap-icon://decline" type="Transparent" press="onClearFiltersPress"/>
+          </Toolbar>
+          <Table
+                  id="todosTable"
+                  inset="false"
+                  mode="SingleSelectMaster"
+          items="{todos>/data}"
+          selectionChange="onItemSelect">
+          <columns>
+            <Column width="40%">
+              <header>
+                <Label text="Title" />
+              </header>
+            </Column>
+            <Column width="40%">
+              <header>
+                <Label text="Description" />
+              </header>
+            </Column>
+            <Column width="10%">
+              <header>
+                <Label text="Priority" />
+              </header>
+            </Column>
+            <Column width="10%">
+              <header>
+                <Label text="Completed" />
+              </header>
+            </Column>
+          </columns>
+          <items>
+            <ColumnListItem type="Navigation">
+              <cells>
+                <Label text="{todos>title}" design="Bold"/>
+                <Label text="{todos>description}" design="Bold"/>
+                <Label text="{todos>priority}" design="Bold"/>
+                <Label text="{ path: 'todos>completed', formatter: '.isCompleted'}"/>
+              </cells>
+            </ColumnListItem>
+          </items>
+        </Table>
+          </VBox>
+      </content>
+      </Page>
+    </f:beginColumnPages>
+
+    <!-- Detail Page (Second Column) -->
+    <f:midColumnPages>
+          <uxap:ObjectPageLayout id="ObjectPageLayout"
+            enableLazyLoading="true"
+            useIconTabBar="true"
+            showTitleInHeaderContent="true"
+            upperCaseAnchorBar="false">
+            <uxap:headerTitle>
+              <uxap:ObjectPageDynamicHeaderTitle>
+                <uxap:expandedHeading>
+                  <Title text="{selectedItem>/title}" wrapping="true"/>
+                </uxap:expandedHeading>
+
+                <uxap:expandedContent>
+                  <Text text="{selectedItem>/description}"/>
+                </uxap:expandedContent>
+
+                <uxap:actions>
+                  <Button icon="sap-icon://complete" text="Complete" type="Emphasized" press="onCompletePress" visible="{path: 'selectedItem>/completed', formatter: '.isTodoCompleted'}"/>
+                  <Button icon="sap-icon://edit" text="Edit todo" type="Emphasized" press="onEditPress"
+                          visible="{path: 'todos>/data', formatter: '.formatter.hasWriterAdminPer'}"/>
+                  <OverflowToolbarButton icon="sap-icon://decline" type="Transparent" press="onCloseDetails"/>
+                </uxap:actions>
+              </uxap:ObjectPageDynamicHeaderTitle>
+            </uxap:headerTitle>
+
+            
+            <uxap:sections>
+              <uxap:ObjectPageSection titleUppercase="false" id="metadata" title="Details about Todo">
+              <uxap:subSections>
+                <uxap:ObjectPageSubSection  titleUppercase="false">
+                  <uxap:blocks>
+                    <ObjectHeader title="{selectedItem>/title}">
+                      <attributes>
+                        <ObjectAttribute title="Description" text="{ path: 'selectedItem>/description', formatter: '.formatter.formatInformation'}" active="true"/>
+                        <ObjectAttribute title="Priority" text="{selectedItem>/priority}" active="true"/>
+                        <ObjectAttribute title="Tags" text="{ path: 'selectedItem>/tags', formatter: '.formatTags'}" active="true"/>
+                        <ObjectAttribute title="Completed" text="{ path: 'selectedItem>/completed', formatter: '.isCompleted'}" active="true"/>
+                        <ObjectAttribute title="Assigned to" text="{path: 'selectedItem>/assignedTo/email', formatter: '.formatter.formatInformation'}" active="true"/>
+                        <ObjectAttribute title="Created At" text="{ path: 'selectedItem>/createdAt', formatter: '.formatDate' }" active="true"/>
+                        <ObjectAttribute title="Start Date" text="{ path: 'selectedItem>/startDate', formatter: '.formatDate' }" active="true"/>
+                        <ObjectAttribute title="Due Date" text="{ path: 'selectedItem>/dueDate', formatter: '.formatDate' }" active="true"/>
+                        <ObjectAttribute title="Part of list with name" text="{selectedItem>/list/name}" active="true"/>
+                      </attributes>
+                    </ObjectHeader>
+                    <HBox justifyContent="End">
+                      <Button
+                              icon="sap-icon://delete"
+                              type="Transparent"
+                              text="Delete todo"
+                              press="onDeleteTodo"
+                              visible="{path: 'todos>/data', formatter: '.formatter.hasWriterAdminPer'}"/>
+                    </HBox>
+                  </uxap:blocks>
+                </uxap:ObjectPageSubSection>
+              </uxap:subSections>
+              </uxap:ObjectPageSection>
+              
+              <uxap:ObjectPageSection titleUppercase="false" id="listMetaData" title="Details about List">
+              <uxap:subSections>
+                <uxap:ObjectPageSubSection  titleUppercase="false">
+                  <uxap:blocks>
+                    <ObjectHeader title="{selectedItem>/list/name}">
+                      <attributes>
+                        <ObjectAttribute title="Description" text="{ path: 'selectedItem>/list/description', formatter: '.formatter.formatInformation'}" active="true"/>
+                        <ObjectAttribute title="Visibility" text="{selectedItem>/list/visibility}" active="true"/>
+                        <ObjectAttribute title="Owner of the list" text="{selectedItem>/list/owner/email}" active="true"/>
+                        <ObjectAttribute title="Tags" text="{ path: 'selectedItem>/list/tags', formatter: '.formatTags'}" active="true"/>
+                        <ObjectAttribute title="Created At" text="{ path: 'selectedItem>/list/createdAt', formatter: '.formatDate' }" active="true"/>
+                        <ObjectAttribute title="Updated At" text="{ path: 'selectedItem>/list/updatedAt', formatter: '.formatDate' }" active="true"/>
+                      </attributes>
+                    </ObjectHeader>
+                  </uxap:blocks>
+                </uxap:ObjectPageSubSection>
+              </uxap:subSections>
+              </uxap:ObjectPageSection>
+
+              <uxap:ObjectPageSection titleUppercase="false" id="assignee" title="Assignee" visible="{= ${selectedItem>/assignedTo} !== null }">
+              <uxap:subSections>
+                <uxap:ObjectPageSubSection  titleUppercase="false">
+                  <uxap:blocks>
+                    <ObjectHeader title="Assigned user for the task">
+                      <attributes>
+                        <ObjectAttribute title="Email" text="{selectedItem>/assignedTo/email}" active="true"/>
+                        <ObjectAttribute title="Role" text="{selectedItem>/assignedTo/role}" active="true"/>           
+                        <ObjectAttribute title="Create profile on" text="{ path: 'selectedItem>/assignedTo/updatedAt', formatter: '.formatDate'}" active="true"/>
+                        <ObjectAttribute title="Task was started on" text="{ path: 'selectedItem>/startDate', formatter: '.formatDate'}" active="true"/>
+                        <ObjectAttribute title="Task should be completed until" text="{ path: 'selectedItem>/dueDate', formatter: '.formatDate'}" active="true"/>
+                      </attributes>
+                    </ObjectHeader>
+                  </uxap:blocks>
+                </uxap:ObjectPageSubSection>
+              </uxap:subSections>
+              </uxap:ObjectPageSection>
+            
+            </uxap:sections>
+          </uxap:ObjectPageLayout>
+    </f:midColumnPages>
+
+  </f:FlexibleColumnLayout>
+</mvc:View>

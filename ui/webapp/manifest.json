@@ -1,0 +1,105 @@
+{
+    "sap.app": {
+      "id": "todoapp",
+      "type": "application",
+      "title": "Intern Project"
+    },
+    "sap.ui": {
+      "technology": "UI5",
+      "deviceTypes": {
+        "desktop": true,
+        "tablet": true,
+        "phone": true
+      }
+    },
+    "sap.ui5": {
+      "resources": {
+        "css": [
+          {
+            "uri": "css/style.css"
+          }
+        ]
+      },
+      "rootView": {
+        "viewName": "todoapp.view.App",
+        "type": "XML",
+        "async": true
+      },
+      "dependencies": {
+        "minUI5Version": "1.60.0",
+        "libs": {
+          "sap.m": {},
+          "sap.tnt": {}
+        }
+      },
+      "routing": {
+        "config": {
+          "routerClass": "sap.m.routing.Router",
+          "viewType": "XML",
+          "viewPath": "todoapp.view",
+          "controlId": "app",
+          "controlAggregation": "pages",
+          "bypassed": {
+            "target": "login"
+          },
+          "async": true
+        },
+        "routes": [
+          {
+            "pattern": "",
+            "name": "login",
+            "target": "login"
+          },
+
+          {
+            "pattern": "lists",
+             "name": "lists",
+            "target": "lists"
+          },
+
+          {
+            "pattern": "todos",
+            "name": "todos",
+            "target": "todos"
+          },
+          
+          {
+            "pattern": "list/{listId}",
+            "name": "list",
+            "target": "list"
+          },
+          {
+            "pattern": "invites",
+            "name": "invites",
+            "target": "invites"
+          },
+          {
+            "pattern": "calendar",
+            "name": "calendar",
+            "target": "calendar"
+          }
+        ],
+        "targets": {
+          "login": {
+            "viewName": "Login"
+          },
+          "lists": {
+            "viewName": "Lists"
+          },
+          "list": {
+            "viewName": "List"
+          },
+          "todos": {
+            "viewName": "Todos"
+          },
+          "invites": {
+            "viewName": "Invites"
+          },
+          "calendar": {
+            "viewName": "Calendar"
+          }
+        }
+      }
+    }
+  }
+  

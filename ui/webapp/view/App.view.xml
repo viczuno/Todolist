@@ -1,0 +1,61 @@
+<mvc:View
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.tnt"
+  xmlns:m="sap.m"
+  xmlns:core="sap.ui.core"
+  controllerName="todoapp.controller.App">
+  
+  <ToolPage id="apps">
+    <!-- Header -->
+    <header>
+      <ToolHeader>
+        <core:Icon src="sap-icon://home" size="2rem" class="sapUiTinyMarginEnd"/>
+        <m:Title text="Todo List Application" />
+        <m:ToolbarSpacer />
+        <core:Icon src="sap-icon://role" size="2rem" class="sapUiTinyMarginEnd" visible="{path: 'user>/data', formatter: '.formatter.hasCookie'}"/>
+        <m:Title text="{path: 'user>/data', formatter: '.formatter.getRole'}" visible="{path: 'user>/data', formatter: '.formatter.hasCookie'}" />
+        <m:ToolbarSpacer />
+        <core:Icon src="sap-icon://email" size="2rem" class="sapUiTinyMarginEnd" visible="{path: 'user>/data', formatter: '.formatter.hasCookie'}"/>
+        <m:Title text="{path: 'user>/data', formatter: '.getEmail'}" visible="{path: 'user>/data', formatter: '.formatter.hasCookie'}"/>
+        <m:Button icon="sap-icon://bell"
+                  class="sapUiSmallMarginEnd"
+                  press="handleNotificationPress"
+                  visible="{path: 'user>/data', formatter: '.formatter.hasCookie'}">
+          <m:customData>
+            <m:BadgeCustomData
+                    key="badge"
+                    value="{= ${notifications>/pendingLists}.length }"
+                    visible=""/>
+          </m:customData>
+        </m:Button>
+        <m:Button
+                id="logoutButton"
+                icon="sap-icon://log"
+                text="Logout"
+                type="Ghost"
+                visible="{path: 'user>/data', formatter: '.formatter.hasCookie'}"
+                press="onLogout" />
+      </ToolHeader>
+
+    </header>
+
+    <!-- Side Navigation -->
+    <sideContent>
+      <SideNavigation visible="{path: 'user>/data', formatter: '.formatter.hasCookie'}" id="sideTab">
+      
+        <NavigationList id="sideNavigation">
+          <!-- <NavigationListItem text="Home" icon="sap-icon://home" select="onNavToHome"/> -->
+          <NavigationListItem text="Lists" icon="sap-icon://list" select="onNavToLists" id="listsNav"/>
+          <NavigationListItem text="Todos" icon="sap-icon://task" select="onNavToTodos" id="todosNav"/>
+          <NavigationListItem text="Invites" icon="sap-icon://account" select="onNavToInvites" id="invitesNav"/>
+          <NavigationListItem text="Calendar" icon="sap-icon://calendar" select="onNavToCalendar" id="calendarNav"/>
+        </NavigationList>
+      </SideNavigation>
+    </sideContent>
+
+    <!-- Right Content Area -->
+    <mainContents>
+      <m:App id="app" />
+    </mainContents>
+  </ToolPage>
+</mvc:View>

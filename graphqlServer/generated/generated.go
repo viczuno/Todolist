@@ -13,9 +13,9 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	graphql1 "github.com/Victor-Uzunov/devops-project/graphqlServer/generated/graphql"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
-	graphql1 "github.com/Victor-Uzunov/devops-project/graphqlServer/generated/graphql"
 )
 
 // region    ************************** generated!.gotpl **************************

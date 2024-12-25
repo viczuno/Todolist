@@ -1,0 +1,117 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    controllerName="todoapp.controller.Lists">
+
+    <Page showHeader="false">
+        <content>
+            <NavContainer id="pageContainer" initialPage="page2">
+                <pages>
+                    <ScrollContainer
+                            id="page2"
+                            horizontal="false"
+                            vertical="true"
+                            height="100%"
+                            class="sapUiContentPadding">
+                        <HBox justifyContent="SpaceBetween" class="sapUiSmallMargin">
+                            <Button text="Add new List" icon="sap-icon://add" class="sapUiSmallMarginBottom" press="onAddList" width="105%"
+                                    visible="{path: 'lists>/data', formatter: '.formatter.hasWriterAdminPer'}"/>
+                        </HBox>
+                        <HBox justifyContent="SpaceBetween" class="sapUiSmallMargin">
+                            <Title text="{path: 'lists>/data', formatter: '.formatter.formatListStatus'}"
+                                   level="H2"
+                                   titleStyle="H4"
+                                   visible="{= ${lists>/data}.length > 0 }"
+                                   class="sapUiSmallMarginTop sapUiSmallMarginBegin sapUiSmallMarginBottom"/>
+                            <ObjectStatus
+                                    text="{= 'Your Lists: ' + ${lists>/data}.length}"
+                                    state="Information"
+                                    visible="{= ${lists>/data}.length > 0 }"
+                                    icon="sap-icon://list"
+                                    inverted="true"/>
+                        </HBox>
+
+                        <f:GridContainer
+                                id="grid1"
+                                class="sapUiSmallMargin"
+                                width="100%"
+                                snapToRow="true"
+                                visible="{= ${lists>/data}.length > 0 }"
+                                items="{lists>/data}">
+                            <f:layout>
+                                <f:GridContainerSettings columns="12" rowSize="3rem" gap="2rem"/>
+                            </f:layout>
+                            <GenericTile
+                                    header="{lists>name}"
+                                    subheader="{lists>description}"
+                                    press="onTilePress"
+                                    width="12rem"
+                                    class="customTileSize">
+                                <layoutData>
+                                    <f:GridContainerItemLayoutData minRows="3" columns="2" />
+                                </layoutData>
+                                <actionButtons>
+                                    <Button text="Delete" press="onDelete"/>
+                                </actionButtons>
+                                <TileContent>
+                                    <HBox items="{lists>tags}" wrap="Wrap">
+                                        <GenericTag text="{lists>}" class="sapUiTinyMarginEnd"/>
+                                    </HBox>
+                                </TileContent>
+                            </GenericTile>
+
+                        </f:GridContainer>
+
+                        <HBox justifyContent="SpaceBetween" class="sapUiSmallMargin">
+                            <Title text="Accepted lists from other users:"
+                                   level="H2"
+                                   titleStyle="H4"
+                                   visible="{= ${accepted>/data}.length > 0 }"
+                                   class="sapUiSmallMarginTop sapUiSmallMarginBegin sapUiSmallMarginBottom"/>
+                            <ObjectStatus
+                                    text="{= 'Accepted Lists: ' + ${accepted>/data}.length}"
+                                    state="Information"
+                                    icon="sap-icon://list"
+                                    visible="{= ${accepted>/data}.length > 0 }"
+                                    inverted="true"/>
+                        </HBox>
+
+                        <f:GridContainer
+                                id="grid2"
+                                class="sapUiSmallMargin"
+                                width="100%"
+                                snapToRow="true"
+                                visible="{= ${accepted>/data}.length > 0 }"
+                                items="{accepted>/data}">
+                            <f:layout>
+                                <f:GridContainerSettings columns="12" rowSize="3rem" gap="2rem"/>
+                            </f:layout>
+                            <GenericTile
+                                    header="{accepted>name}"
+                                    subheader="{accepted>description}"
+                                    press="onTileAcceptedPress"
+                                    width="12rem"
+                                    class="customTileSize">
+                                <layoutData>
+                                    <f:GridContainerItemLayoutData minRows="3" columns="2" />
+                                </layoutData>
+                                <actionButtons>
+                                    <Button text="Delete" press="onDelete"/>
+                                </actionButtons>
+                                <TileContent>
+                                    <HBox items="{accepted>tags}" wrap="Wrap">
+                                        <GenericTag text="{accepted>}" class="sapUiTinyMarginEnd"/>
+                                    </HBox>
+                                </TileContent>
+                            </GenericTile>
+
+                        </f:GridContainer>
+                    </ScrollContainer>
+                    
+                </pages>
+            </NavContainer>
+
+        </content>
+    </Page>
+</mvc:View>

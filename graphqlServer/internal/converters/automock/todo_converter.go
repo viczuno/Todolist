@@ -3,8 +3,8 @@
 package automock
 
 import (
-	mock "github.com/stretchr/testify/mock"
 	graphql "github.com/Victor-Uzunov/devops-project/graphqlServer/generated/graphql"
+	mock "github.com/stretchr/testify/mock"
 
 	models "github.com/Victor-Uzunov/devops-project/todoservice/pkg/models"
 )
