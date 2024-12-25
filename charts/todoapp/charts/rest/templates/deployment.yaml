@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rest.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.deployment.image.name }}:{{ .Values.deployment.image.tag }}"
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          ports:
+            - name: rest-http
+              containerPort: {{ .Values.global.rest.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.global.rest.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: {{ .Values.global.rest.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.deployment.resources | nindent 12 }}
+          env:
+            - name: APP_DB_HOST
+              value: {{ .Values.global.postgres.service.fqdn }}
+            - name: APP_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-sql
+                  key: database-port
+            - name: APP_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-sql
+                  key: database-user
+            - name: APP_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-sql
+                  key: database-password
+            - name: APP_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-sql
+                  key: database-name
+            - name: APP_DB_SSLMODE
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-sql
+                  key: database-sslmode
+            - name: APP_DB_RETRYCOUNT
+              value: "5"
+            - name: APP_DB_DURATION
+              value: "10s"
+            - name: APP_LOG_LEVEL
+              value: "debug"
+            - name: APP_LOG_FORMAT
+              value: "text"
+            - name: JWT_EXPIRATION_TIME
+              value: "60m"
+            - name: REFRESH_EXPIRATION_TIME
+              value: "720h"
+            - name: CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: oauth-app
+                  key: client-id
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth-app
+                  key: client-secret
+            - name: REDIRECT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: oauth-app
+                  key: redirect-url
+            - name: SCOPES
+              valueFrom:
+                secretKeyRef:
+                  name: oauth-app
+                  key: scopes
+            - name: OAUTH2_STATE
+              valueFrom:
+                secretKeyRef:
+                  name: oauth-app
+                  key: oauth2-state
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: oauth-app
+                  key: jwt-key
+
+      nodeSelector: {}

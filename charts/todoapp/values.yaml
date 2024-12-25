@@ -1,0 +1,15 @@
+global:
+  rest:
+    service:
+      port: 5000
+      fqdn: http://todoapp-rest.todoapp-system.svc.cluster.local
+  graphql:
+    service:
+      port: 8000
+  ui:
+    service:
+      port: 80
+  postgres:
+    service:
+      port: 5432
+      fqdn: todoapp-postgres.todoapp-system.svc.cluster.local

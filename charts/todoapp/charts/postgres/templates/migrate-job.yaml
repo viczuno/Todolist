@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate-postgres
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded, hook-failed
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      containers:
+        - name: migrate
+          image: "{{ .Values.deployment.migrations.image }}:{{ .Values.deployment.migrations.tag }}"
+          imagePullPolicy: {{ .Values.deployment.migrations.pullPolicy }}
+          command: ["sh", "-c", "./migrate.sh up"]
+          env:
+            - name: DB_HOST
+              value: {{ .Values.global.postgres.service.fqdn }}
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-sql
+                  key: database-port
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-sql
+                  key: database-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-sql
+                  key: database-password
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-sql
+                  key: database-name
+            - name: MIGRATIONS_DIR
+              value: {{ .Values.app.postgres.dir }}
+
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "nc -zv {{ .Values.app.postgres.databaseHost }} {{ .Values.app.postgres.databasePort }}"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      restartPolicy: OnFailure
+  backoffLimit: 5

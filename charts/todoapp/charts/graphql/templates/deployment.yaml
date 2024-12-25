@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "graphql.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.deployment.image.name }}:{{ .Values.deployment.image.tag }}"
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          ports:
+            - name: graphql-http
+              containerPort: {{ .Values.global.graphql.service.port}}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.global.graphql.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: {{ .Values.global.graphql.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.deployment.resources | nindent 12 }}
+          env:
+            - name: APP_TODO_SERVICE_ENDPOINT
+              value: "{{ .Values.global.rest.service.fqdn }}:{{ .Values.global.rest.service.port }}"
+            - name: APP_TODO_SERVICE_TIMEOUT
+              value: "30s"
+            - name: APP_TODO_SERVICE_PORT
+              value: {{ .Values.global.graphql.service.port | quote}}
+            - name: APP_LOG_LEVEL
+              value: {{ .Values.app.log.level }}
+            - name: APP_LOG_FORMAT
+              value: {{ .Values.app.log.format }}
+      nodeSelector: {}

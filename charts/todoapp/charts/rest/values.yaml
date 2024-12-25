@@ -1,0 +1,25 @@
+deployment:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 512m
+      memory: 128Mi
+  image:
+    name: victoruzunov/todoservice
+    tag: project
+    pullPolicy: Always
+
+app:
+  log:
+    level: debug
+    format: text
+  oauth:
+    clientId: Ov23liZXvzp9cMsCdfNh
+    clientSecret: 710c9e95026038200f9c1f72a6309808bd9283dd
+    redirectUrl: http://localhost:8000/login/github/callback
+    scopes: read:org,user
+    oauth2State: VhAMnA9+48wHJkujmsdIn50XXUBw2Yjm+kWcwlSzE9U=
+    jwtKey: zYtQBWa1sFNcGpoLkqN7Cn2RPcR/SqHOc0IF7/MuQIY=
