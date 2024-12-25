@@ -1,0 +1,67 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:core="sap.ui.core"
+              controllerName="todoapp.controller.CreateListDialog">
+    <Dialog id="createListDialog"
+            title="{ path: 'listModel>/isEditMode', formatter: '.formatTitle'}"
+            afterClose="onAfterClose"
+            width="33rem">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <Label text="Enter the name of the list:" required="true"/>
+                <Input id="listNameInput"
+                       placeholder="List Name"
+                       class="sapUiSmallMarginBottom"
+                       value="{listModel>/name}"
+                       width="33rem"
+                       required="true"
+                       liveChange="validateListName"
+                       valueLiveUpdate="true"
+                       change="onNameChange"
+                       valueState="{listModel>/validation/name/type}"
+                       valueStateText="{listModel>/validation/name/text}"/>
+                <Label text="Enter description of the list:"/>
+                <Input id="listDescriptionInput"
+                       class="sapUiSmallMarginBottom"
+                       placeholder="Description..."
+                       value="{listModel>/description}"
+                       width="33rem"/>
+                <Label text="Select visibility:" required="true"/>
+                <Select id="visibilitySelect" class="sapUiSmallMarginBottom"
+                        selectedKey="{listModel>/visibility}"
+                        valueState="{listModel>/validation/visibility/type}"
+                        valueStateText="{listModel>/validation/visibility/text}"
+                        change="onVisibilityChange"
+                        width="33rem">
+                    <items>
+                        <core:Item key="" text="Select visibility" enabled="false" />
+                        <core:Item key="PRIVATE" text="Private"/>
+                        <core:Item key="SHARED" text="Shared"/>
+                    </items>
+                </Select>
+                <Label text="Select tags:"/>
+                <MultiComboBox id="createListTagsMultiComboBox"
+                               class="sapUiSmallMarginBottom"
+                               selectedKeys="{listModel>/tags}"
+                               placeholder="Select tags"
+                               selectionChange="onSelectionChange"
+                               width="33rem">
+                    <items>
+                        <core:Item key="work" text="Work"/>
+                        <core:Item key="personal" text="Personal"/>
+                        <core:Item key="shopping" text="Shopping"/>
+                        <core:Item key="health" text="Health"/>
+                        <core:Item key="fitness" text="Fitness"/>
+                        <core:Item key="finance" text="Finance"/>
+                        <core:Item key="important" text="Important"/>
+                        <core:Item key="urgent" text="Urgent"/>
+                    </items>
+                </MultiComboBox>
+            </VBox>
+        </content>
+        <beginButton>
+            <Button text="Submit" press="onSubmitPress"/>
+        </beginButton>
+        <endButton>
+            <Button text="Cancel" press="onCancelPress"/>
+        </endButton>
+    </Dialog>
+</mvc:View>

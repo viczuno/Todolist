@@ -1,0 +1,66 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:core="sap.ui.core"
+          controllerName="todoapp.controller.AddUserDialog">
+    <Dialog id="addUserDialog" title="Invite collaborator" beforeOpen="onOpenDialog" contentWidth="30rem">
+        <content>
+            <VBox alignItems="Start" class="sapUiSmallMargin">
+                <Label text="Enter the email address:" visible="{access>/hasUsers}"/>
+                <MessageStrip
+                        visible="{= !${access>/hasUsers} }"
+                        text="No other users available to add as collaborators."
+                        type="None"
+                        showIcon="true"
+                        class="sapUiSmallMarginBottom"/>
+                <ComboBox
+                        id="emailInput"
+                        class="sapUiSmallMarginBottom"
+                        width="18rem"
+                        selectedKey="{access>/userId}"
+                        change="onEmailChange"
+                        visible="{access>/hasUsers}"
+                        items="{access>/existingUsers}">
+                    <core:Item key="{access>id}" text="{access>email}" />
+                </ComboBox>
+
+                <Label text="Current Collaborators" />
+                <Label text="There are no collaborators in this list yet"
+                       visible="{= ${access>/collaborators}.length === 0 }"/>
+                <Table
+                        id="collaboratorsList"
+                        width="100%"
+                        items="{access>/collaborators}"
+                        visible="{= ${access>/collaborators}.length > 0 }">
+                    <columns>
+                        <Column width="50%">
+                            <Text text="User"/>
+                        </Column>
+                        <Column width="20%">
+                            <Text text="Role"/>
+                        </Column>
+                        <Column width="20%">
+                            <Text text="Status"/>
+                        </Column>
+                        <Column width="10%"></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Label text="{access>user/email}" textAlign="Center"/>
+                                <Label text="{access>user/role}" textAlign="Center"/>
+                                <Label text="{access>status}" textAlign="Center"/>
+                                <HBox alignItems="End">
+                                    <Button icon="sap-icon://decline" type="Transparent" press="onRemoveCollaborator"/>
+                                </HBox>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+        <beginButton>
+            <Button text="Submit" press="onSubmitPress" visible="{access>/hasUsers}"/>
+        </beginButton>
+        <endButton>
+            <Button text="Cancel" press="onCancelPress"/>
+        </endButton>
+    </Dialog>
+</mvc:View>

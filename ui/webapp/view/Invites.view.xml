@@ -1,0 +1,50 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:core="sap.ui.core"
+          controllerName="todoapp.controller.Invites">
+    <Page title="List invites from other users" titleAlignment="Center">
+        <content>
+            <Table
+                    id="invitesTable"
+                    items="{invites>/data}"
+                    width="100%"
+                    layoutData="sap.m.FlexItemData">
+                <columns>
+                    <Column width="25%">
+                        <Text text="List Name"/>
+                    </Column>
+                    <Column width="30%">
+                        <Text text="List Description"/>
+                    </Column>
+                    <Column width="15%">
+                        <Text text="Tags"/>
+                    </Column>
+                    <Column width="15%">
+                        <Text text="Owner Email"/>
+                    </Column>
+                    <Column width="10%">
+                        <Text text="Actions"/>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Label text="{invites>name}" textAlign="Center"/>
+                            <Label text="{invites>description}" textAlign="Center"/>
+                            <HBox>
+                                <Tokenizer class="inviteTags" renderMode="Narrow" enabled="true" width="10rem" tokens="{invites>tags}">
+                                    <tokens>
+                                        <Token text="{invites>}" editable="false"/>
+                                    </tokens>
+                                </Tokenizer>
+                            </HBox>
+                            <Label text="{invites>owner/email}" textAlign="Center"/>
+                            <HBox alignItems="End">
+                                <Button text="Accept" type="Emphasized" press=".onAcceptPress" class="sapUiSmallMarginEnd"/>
+                                <Button text="Reject" press=".onRejectPress"/>
+                            </HBox>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

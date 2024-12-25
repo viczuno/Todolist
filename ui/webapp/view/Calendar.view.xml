@@ -1,0 +1,69 @@
+<mvc:View
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns="sap.m"
+        xmlns:unified="sap.ui.unified"
+        controllerName="todoapp.controller.Calendar">
+    <Page showHeader="false">
+        <content>
+            <NavContainer id="calendarPageContainer" initialPage="calendarNavContainer">
+                <pages>
+                    <ScrollContainer
+                            id="calendarNavContainer"
+                            horizontal="false"
+                            vertical="true"
+                            height="100%"
+                            class="sapUiContentPadding">
+                        <PlanningCalendar
+                                id="PlanningCalendar"
+                                startDate="{'todos>/startDate'}"
+                                viewKey="Week"
+                                rows="{todos>/data}"
+                                showWeekNumbers="true"
+                                appointmentsVisualization="Filled"
+                                appointmentSelect="onAppointmentSelect">
+                            <toolbarContent>
+                                <Title text="Planned Todos" titleStyle="H4"/>
+
+                            </toolbarContent>
+                            <rows>
+                                <PlanningCalendarRow appointments="{todos>items}">
+                                    <appointments>
+                                        <unified:CalendarAppointment
+                                                startDate="{todos>startDate}"
+                                                endDate="{todos>dueDate}"
+                                                title="{todos>title}"
+                                                type="{todos>type}"
+                                                tooltip="{todos>title}" />
+                                    </appointments>
+                                </PlanningCalendarRow>
+                            </rows>
+                        </PlanningCalendar>
+                    </ScrollContainer>
+                </pages>
+            </NavContainer>
+
+            <Popover
+                    id="todoDetailsPopover"
+                    title="Todo Details"
+                    placement="Bottom"
+                    contentWidth="350px"
+                    afterClose=".onPopoverClose">
+                <VBox>
+                    <ObjectHeader
+                            title="{selectedItem>/title}">
+                        <attributes>
+                            <ObjectAttribute title="Description" text="{ path: 'selectedItem>/description', formatter: '.formatter.formatInformation'}" active="true"/>
+                            <ObjectAttribute title="Priority" text="{selectedItem>/priority}" active="true"/>
+                            <ObjectAttribute title="Tags" text="{ path: 'selectedItem>/tags', formatter: '.formatter.formatTags'}" active="true"/>
+                            <ObjectAttribute title="Assigned to" text="{selectedItem>/assignedTo/email}" active="true" visible="{= ${selectedItem>/assignedTo} !== null }"/>
+                            <ObjectAttribute title="Completed" text="{= ${selectedItem>/completed} ? 'Yes' : 'No' }" active="true"/>
+                            <ObjectAttribute title="Start date" text="{ path: 'selectedItem>/startDate', formatter: '.formatDate' }" active="true"/>
+                            <ObjectAttribute title="End date" text="{ path: 'selectedItem>/dueDate', formatter: '.formatDate' }" active="true"/>
+                            <ObjectAttribute title="Part of list with name" text="{selectedItem>/list/name}" active="true"/>
+                        </attributes>
+                    </ObjectHeader>
+                </VBox>
+            </Popover>
+        </content>
+    </Page>
+</mvc:View>

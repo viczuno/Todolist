@@ -1,0 +1,39 @@
+<mvc:View
+        controllerName="todoapp.controller.Login"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:core="sap.ui.core"
+        displayBlock="true">
+    <Page id="loginPage" title="Login" showHeader="false">
+        <content>
+            <VBox class="sapUiLargeMargin" alignItems="Center">
+                <Title text="Welcome to the Todo-List Application!" level="H1" titleStyle="H2" class="sapUiSmallMarginBottom" />
+                <Title text="Intern project at SAP" level="H1" titleStyle="H2" class="sapUiSmallMarginBottom" />
+
+                <VBox class="sapUiSmallMarginBottom" alignItems="Center">
+                    <core:Icon src="sap-icon://activity-items" size="5rem" class="sapUiSmallMarginBottom" />
+                    <Label text="Please login using GitHub to access your lists and tasks"
+                           class="sapUiSmallMarginBottom"
+                           visible="{path: 'user>/data', formatter: '.formatter.loginButton'}"
+                           design="Bold"/>
+                    <Label text="You need to be part of a GitHub organization: READER, WRITER, or ADMIN"
+                           class="sapUiSmallMarginBottom"
+                           visible="{path: 'user>/data', formatter: '.formatter.loginButton'}"
+                           design="Bold"/>
+                </VBox>
+
+                <Button
+                        text="Login via GitHub"
+                        icon="sap-icon://home"
+                        type="Emphasized"
+                        press="onLoginPress"
+                        visible="{path: 'user>/data', formatter: '.formatter.loginButton'}"
+                        class="sapUiSmallMarginBottom" />
+
+                <Text text="Need help?" class="sapUiSmallMarginTop" />
+                <Link text="Click here for support" press="onSupportPress" class="sapUiSmallMarginTop" />
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>
+

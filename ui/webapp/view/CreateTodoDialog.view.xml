@@ -1,0 +1,122 @@
+<mvc:View
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        controllerName="todoapp.controller.CreateTodoDialog">
+    <Dialog id="createTodoDialog" title="{ path: 'todo>/isEditMode', formatter: '.formatTitle'}" beforeOpen="onOpenDialog"
+            afterClose="onAfterClose"  draggable="true">
+        <content>
+            <VBox alignItems="Start" class="sapUiSmallMargin">
+                <Label text="Enter the title:" required="true"/>
+                <Input
+                        id="todoTitleInput"
+                        class="sapUiSmallMarginBottom"
+                        placeholder="Todo Title"
+                        width="33rem"
+                        required="true"
+                        value="{todo>/title}"
+                        liveChange="validateTodoName"
+                        valueLiveUpdate="true"
+                        change="onTitleChange"
+                        valueState="{todo>/validation/title/type}"
+                        valueStateText="{todo>/validation/title/text}"
+                />
+
+                <Label text="Enter description:"/>
+                <Input
+                        id="todoDescriptionInput"
+                        class="sapUiSmallMarginBottom"
+                        placeholder="Description..."
+                        width="33rem"
+                        value="{todo>/description}"/>
+
+                <Label text="Select priority:" required="true"/>
+                <Select
+                        id="prioritySelect"
+                        class="sapUiSmallMarginBottom"
+                        width="33rem"
+                        required="true"
+                        selectedKey="{todo>/priority}"
+                        valueState="{todo>/validation/priority/type}"
+                        valueStateText="{todo>/validation/priority/text}"
+                        change="onPriorityChange">
+                    <items>
+                        <core:Item key="" text="Select priority" enabled="false" />
+                        <core:Item key="HIGH" text="High"/>
+                        <core:Item key="MEDIUM" text="Medium"/>
+                        <core:Item key="LOW" text="Low"/>
+                    </items>
+                </Select>
+
+                <Label text="Select tags:"/>
+                <MultiComboBox
+                        id="createTodoTagsMultiComboBox"
+                        class="sapUiSmallMarginBottom"
+                        placeholder="Select tags"
+                        selectionChange="onSelectionChange"
+                        width="33rem"
+                        selectedKeys="{todo>/tags}">
+                    <items>
+                        <core:Item key="work" text="Work"/>
+                        <core:Item key="personal" text="Personal"/>
+                        <core:Item key="shopping" text="Shopping"/>
+                        <core:Item key="health" text="Health"/>
+                        <core:Item key="fitness" text="Fitness"/>
+                        <core:Item key="finance" text="Finance"/>
+                        <core:Item key="important" text="Important"/>
+                        <core:Item key="urgent" text="Urgent"/>
+                    </items>
+                </MultiComboBox>
+
+                <Label id="emailLabel" text="Enter the assignee`s email:" labelFor="emailInput"/>
+                <ComboBox
+                        id="emailInput"
+                        width="33rem"
+                        showClearIcon="true"
+                        ariaLabelledBy="emailLabel"
+                        class="sapUiSmallMarginBottom"
+                        selectedKey="{todo>/assignedTo/id}"
+                        valueState="{todo>/validation/assignedTo/type}"
+                        valueStateText="{todo>/validation/assignedTo/text}"
+                        selectionChange="onEmailChange"
+                        items="{todo>/existingUsers}"
+                        >
+                    <core:Item key="{todo>id}" text="{todo>email}" />
+                </ComboBox>
+
+                <HBox justifyContent="SpaceBetween" width="100%">
+                    <VBox>
+                        <Label text="Start date time"/>
+                        <DateTimePicker
+                                id="startDateTime"
+                                change="onStartDateTimeChange"
+                                class="sapUiSmallMarginBottom"
+                                width="15rem"
+                                maxDate="{todo>/startDateTimeMaxDate}"
+                                value="{todo>/rawStartDateTime}"
+                                valueState="{todo>/validation/startDateTime/type}"
+                                valueStateText="{todo>/validation/startDateTime/text}"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="Due date time"/>
+                        <DateTimePicker
+                                id="endDateTime"
+                                change="onEndDateTimeChange"
+                                class="sapUiSmallMarginBottom"
+                                width="15rem"
+                                minDate="{todo>/endDateTimeMinDate}"
+                                value="{todo>/rawEndDateTime}"
+                                valueState="{todo>/validation/endDateTime/type}"
+                                valueStateText="{todo>/validation/endDateTime/text}"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </content>
+        <beginButton>
+            <Button id="submitButton" text="Submit" press="onSubmitPress"/>
+        </beginButton>
+        <endButton>
+            <Button text="Cancel" press="onCancelPress"/>
+        </endButton>
+    </Dialog>
+</mvc:View>
