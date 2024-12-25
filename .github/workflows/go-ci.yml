@@ -28,5 +28,5 @@ jobs:
         go test -v ./...
     - name: Build
       run: |
-        cd /Users/I750921/Desktop/fmi/modern-devops-practices/devops-project/todoservice/cmd/todoapp
+        cd todoservice/cmd/todoapp
         go build -o myapp .
