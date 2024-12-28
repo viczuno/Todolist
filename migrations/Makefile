@@ -1,4 +1,4 @@
-IMAGE_NAME ?= graphql
+IMAGE_NAME ?= migrate
 TAG ?= project
 REGISTRY ?= victoruzunov
 
