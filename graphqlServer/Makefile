@@ -9,15 +9,11 @@ FULL_IMAGE_NAME := $(REGISTRY)/$(IMAGE_NAME):$(TAG)
 .PHONY: all
 all: build push
 
-ifndef GITHUB_TOKEN
-  $(error GITHUB_TOKEN is not set. Please set it in your environment.)
-endif
-
 # Build the Docker image
 .PHONY: build
 build:
 	@echo "Building Docker image: $(FULL_IMAGE_NAME)"
-	docker build -t $(FULL_IMAGE_NAME) --build-arg GIT_PRIVATEMODULESGITTOKEN=$(GITHUB_TOKEN) .
+	docker build -t $(FULL_IMAGE_NAME) .
 
 # Tag the Docker image (optional step if you need to retag)
 .PHONY: tag
