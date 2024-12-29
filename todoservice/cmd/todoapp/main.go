@@ -18,18 +18,18 @@ func main() {
 	}
 	var cfg log.Config
 	if err := envconfig.Process("", &cfg); err != nil {
-		fmt.Printf("Error on setup logger config %+v", err)
+		fmt.Printf("Error while setup logger config %+v", err)
 		return
 	}
 	var dbConfig database.Config
 	if err := envconfig.Process("", &dbConfig); err != nil {
-		fmt.Printf("Error on setup databse config %+v", err)
+		fmt.Printf("Error while setup databse config %+v", err)
 		return
 	}
 	ctx := context.Background()
 	ctx, err := log.SetupLogger(ctx, cfg)
 	if err != nil {
-		fmt.Printf("Error on setup %+v", err)
+		fmt.Printf("Error while setup %+v", err)
 		return
 	}
 	db, err := database.Create(ctx, dbConfig)
