@@ -101,7 +101,11 @@ jobs:
         run: snyk auth $SNYK_TOKEN
 
       - name: Run Snyk to check for vulnerabilities
-        run: snyk test --file=go.mod --severity-threshold=high
+        run: |
+          cd todoservice
+          snyk test --file=go.mod --severity-threshold=high
+          cd ../graphqlServer
+          snyk test --file=go.mod --severity-threshold=high
 
 
 
