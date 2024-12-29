@@ -15,13 +15,17 @@ import (
 )
 
 func TestTodos_TodoResolver(t *testing.T) {
-	expectedTodo := graphql.Todo{
-		ID:    "1",
-		Title: "Test Todo",
+	expectedTodo := []*graphql.Todo{
+		{
+			ID:    "1",
+			Title: "Test Todo",
+		},
 	}
-	inputTodo := models.Todo{
-		ID:    "1",
-		Title: "Test Todo",
+	inputTodo := []*models.Todo{
+		{
+			ID:    "1",
+			Title: "Test Todo",
+		},
 	}
 
 	tests := []struct {
@@ -37,7 +41,7 @@ func TestTodos_TodoResolver(t *testing.T) {
 		{
 			name:        "successful todos fetch",
 			mockMethod:  "GET",
-			mockURL:     "todos/all",
+			mockURL:     "/todos/user/all",
 			mockResp:    []byte(`[{"ID": "1", "Title": "Test Todo"}]`),
 			mockErr:     nil,
 			expectError: false,
@@ -46,14 +50,14 @@ func TestTodos_TodoResolver(t *testing.T) {
 			},
 			todoConverter: func() *automock.TodoConverter {
 				todoConverter := &automock.TodoConverter{}
-				todoConverter.EXPECT().ConvertTodoToGraphQL(inputTodo).Return(&expectedTodo, nil)
+				todoConverter.EXPECT().ConvertMultipleTodoToGraphQL(inputTodo).Return(expectedTodo, nil)
 				return todoConverter
 			},
 		},
 		{
 			name:        "failed HTTP request",
 			mockMethod:  "GET",
-			mockURL:     "todos/all",
+			mockURL:     "/todos/user/all",
 			mockResp:    nil,
 			mockErr:     errors.New("failed to fetch todos"),
 			expectError: true,
@@ -65,7 +69,7 @@ func TestTodos_TodoResolver(t *testing.T) {
 		{
 			name:        "failed to unmarshal response",
 			mockMethod:  "GET",
-			mockURL:     "todos/all",
+			mockURL:     "/todos/user/all",
 			mockResp:    []byte(`invalid JSON`),
 			mockErr:     nil,
 			expectError: true,
@@ -125,7 +129,7 @@ func TestTodo_TodoResolver(t *testing.T) {
 		{
 			name:        "successful todo fetch",
 			mockMethod:  "GET",
-			mockURL:     "todos/1",
+			mockURL:     "/todos/1",
 			mockResp:    []byte(`{"ID": "1", "Title": "Test Todo"}`),
 			mockErr:     nil,
 			expectError: false,
@@ -139,7 +143,7 @@ func TestTodo_TodoResolver(t *testing.T) {
 		{
 			name:        "failed http request",
 			mockMethod:  "GET",
-			mockURL:     "todos/1",
+			mockURL:     "/todos/1",
 			mockResp:    nil,
 			mockErr:     errors.New("failed to fetch todo"),
 			expectError: true,
@@ -151,7 +155,7 @@ func TestTodo_TodoResolver(t *testing.T) {
 		{
 			name:        "failed to unmarshal response",
 			mockMethod:  "GET",
-			mockURL:     "todos/1",
+			mockURL:     "/todos/1",
 			mockResp:    []byte(`invalid JSON`),
 			mockErr:     nil,
 			expectError: true,
@@ -163,7 +167,7 @@ func TestTodo_TodoResolver(t *testing.T) {
 		{
 			name:        "failed to convert todo",
 			mockMethod:  "GET",
-			mockURL:     "todos/1",
+			mockURL:     "/todos/1",
 			mockResp:    []byte(`{"ID": "1", "Title": "Test Todo"}`),
 			mockErr:     nil,
 			expectError: true,
@@ -247,8 +251,8 @@ func TestCreateTodo_TodoResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "POST", "todos/create", data).Return([]byte(`"1"`), nil)
-				mockClient.On("Do", mock.Anything, "GET", "todos/1", mock.Anything).Return([]byte(`{"ID": "1", "Title": "New Todo"}`), nil)
+				mockClient.On("Do", mock.Anything, "POST", "/todos/create", data).Return([]byte(`"1"`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/todos/1", mock.Anything).Return([]byte(`{"ID": "1", "Title": "New Todo"}`), nil)
 				return mockClient
 			},
 			mockRespID:  []byte(`"1"`),
@@ -285,8 +289,8 @@ func TestCreateTodo_TodoResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "POST", "todos/create", data).Return([]byte(`"1"`), nil)
-				mockClient.On("Do", mock.Anything, "GET", "todos/1", mock.Anything).Return(data, errors.New("failed to fetch todo"))
+				mockClient.On("Do", mock.Anything, "POST", "/todos/create", data).Return([]byte(`"1"`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/todos/1", mock.Anything).Return(data, errors.New("failed to fetch todo"))
 				return mockClient
 			},
 			mockRespID:  []byte(`"1"`),
@@ -365,8 +369,8 @@ func TestUpdateTodo_TodoResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "PUT", "todos/1", data).Return([]byte(`"1"`), nil)
-				mockClient.On("Do", mock.Anything, "GET", "todos/1", mock.Anything).Return([]byte(`{"ID": "1", "Title": "Updated Todo"}`), nil)
+				mockClient.On("Do", mock.Anything, "PUT", "/todos/1", data).Return([]byte(`"1"`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/todos/1", mock.Anything).Return([]byte(`{"ID": "1", "Title": "Updated Todo"}`), nil)
 				return mockClient
 			},
 			mockErr:     nil,
@@ -400,7 +404,7 @@ func TestUpdateTodo_TodoResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "PUT", "todos/1", data).Return([]byte(`"1"`), errors.New("failed to update todo"))
+				mockClient.On("Do", mock.Anything, "PUT", "/todos/1", data).Return([]byte(`"1"`), errors.New("failed to update todo"))
 				return mockClient
 			},
 			mockErr:     errors.New("failed to update todo"),
@@ -419,8 +423,8 @@ func TestUpdateTodo_TodoResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "PUT", "todos/1", data).Return([]byte(`"1"`), nil)
-				mockClient.On("Do", mock.Anything, "GET", "todos/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch todo"))
+				mockClient.On("Do", mock.Anything, "PUT", "/todos/1", data).Return([]byte(`"1"`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/todos/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch todo"))
 				return mockClient
 			},
 			mockErr:     errors.New("failed to fetch todo"),
@@ -482,8 +486,8 @@ func TestDeleteTodo_TodoResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", "todos/1", mock.Anything).Return([]byte(`{"ID": "1", "Title": "Test Todo"}`), nil)
-				mockClient.On("Do", mock.Anything, "DELETE", "todos/1", mock.Anything).Return([]byte(`"1"`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/todos/1", mock.Anything).Return([]byte(`{"ID": "1", "Title": "Test Todo"}`), nil)
+				mockClient.On("Do", mock.Anything, "DELETE", "/todos/1", mock.Anything).Return([]byte(`"1"`), nil)
 				return mockClient
 			},
 			mockRespGet: []byte(`{"ID": "1", "Title": "Test Todo"}`),
@@ -499,7 +503,7 @@ func TestDeleteTodo_TodoResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", "todos/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch todo"))
+				mockClient.On("Do", mock.Anything, "GET", "/todos/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch todo"))
 				return mockClient
 			},
 			mockRespGet: nil,
@@ -517,8 +521,8 @@ func TestDeleteTodo_TodoResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", "todos/1", mock.Anything).Return([]byte(`{"ID": "1", "Title": "Test Todo"}`), nil)
-				mockClient.On("Do", mock.Anything, "DELETE", "todos/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to delete todo"))
+				mockClient.On("Do", mock.Anything, "GET", "/todos/1", mock.Anything).Return([]byte(`{"ID": "1", "Title": "Test Todo"}`), nil)
+				mockClient.On("Do", mock.Anything, "DELETE", "/todos/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to delete todo"))
 				return mockClient
 			},
 			mockRespGet: []byte(`{"ID": "1", "Title": "Test Todo"}`),
@@ -534,7 +538,7 @@ func TestDeleteTodo_TodoResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", "todos/1", mock.Anything).Return([]byte(`invalid_json`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/todos/1", mock.Anything).Return([]byte(`invalid_json`), nil)
 				return mockClient
 			},
 			mockRespGet: []byte(`invalid_json`),
