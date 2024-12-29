@@ -32,5 +32,5 @@ jobs:
 
       - name: Build
         run: |
-          cd ${{ inputs.path }}/cmd/todoapp
+          cd ${{ inputs.path }}/cmd/
           go build -o myapp .
