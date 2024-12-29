@@ -40,7 +40,7 @@ func TestUsers_UserResolver(t *testing.T) {
 		{
 			name:        "successful users fetch",
 			mockMethod:  "GET",
-			mockURL:     "users/all",
+			mockURL:     "/users/all",
 			mockResp:    []byte(`[{"ID": "1", "Email": "victor"}]`),
 			mockErr:     nil,
 			expectError: false,
@@ -59,7 +59,7 @@ func TestUsers_UserResolver(t *testing.T) {
 		{
 			name:        "failed http request",
 			mockMethod:  "GET",
-			mockURL:     "users/all",
+			mockURL:     "/users/all",
 			mockResp:    nil,
 			mockErr:     errors.New("failed to fetch users"),
 			expectError: true,
@@ -74,7 +74,7 @@ func TestUsers_UserResolver(t *testing.T) {
 		{
 			name:        "failed to unmarshal response",
 			mockMethod:  "GET",
-			mockURL:     "users/all",
+			mockURL:     "/users/all",
 			mockResp:    []byte(`invalid JSON`),
 			mockErr:     nil,
 			expectError: true,
@@ -140,7 +140,7 @@ func TestUser_UserResolver(t *testing.T) {
 			name:        "successful user fetch",
 			userID:      "1",
 			mockMethod:  "GET",
-			mockURL:     "users/1",
+			mockURL:     "/users/1",
 			mockResp:    []byte(`{"ID": "1", "Email": "victor"}`),
 			mockErr:     nil,
 			expectError: false,
@@ -158,7 +158,7 @@ func TestUser_UserResolver(t *testing.T) {
 			name:        "failed http request",
 			userID:      "1",
 			mockMethod:  "GET",
-			mockURL:     "users/1",
+			mockURL:     "/users/1",
 			mockResp:    nil,
 			mockErr:     errors.New("failed to fetch user"),
 			expectError: true,
@@ -174,7 +174,7 @@ func TestUser_UserResolver(t *testing.T) {
 			name:        "failed to unmarshal response",
 			userID:      "1",
 			mockMethod:  "GET",
-			mockURL:     "users/1",
+			mockURL:     "/users/1",
 			mockResp:    []byte(`invalid JSON`),
 			mockErr:     nil,
 			expectError: true,
@@ -190,7 +190,7 @@ func TestUser_UserResolver(t *testing.T) {
 			name:        "failed to convert user",
 			userID:      "1",
 			mockMethod:  "GET",
-			mockURL:     "users/1",
+			mockURL:     "/users/1",
 			mockResp:    []byte(`{"ID": "1", "Email": "victor"}`),
 			mockErr:     nil,
 			expectError: true,
@@ -284,8 +284,8 @@ func TestCreateUser_UserResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "POST", "users/create", data).Return([]byte(`"1"`), nil)
-				mockClient.On("Do", mock.Anything, "GET", "users/1", mock.Anything).Return([]byte(`{"ID": "1", "Email": "victor"}`), nil)
+				mockClient.On("Do", mock.Anything, "POST", "/users/create", data).Return([]byte(`"1"`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/users/1", mock.Anything).Return([]byte(`{"ID": "1", "Email": "victor"}`), nil)
 				return mockClient
 			},
 			mockRespID:  []byte(`"1"`),
@@ -328,8 +328,8 @@ func TestCreateUser_UserResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "POST", "users/create", data).Return([]byte(`"1"`), nil)
-				mockClient.On("Do", mock.Anything, "GET", "users/1", mock.Anything).Return(data, errors.New("failed to fetch user"))
+				mockClient.On("Do", mock.Anything, "POST", "/users/create", data).Return([]byte(`"1"`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/users/1", mock.Anything).Return(data, errors.New("failed to fetch user"))
 				return mockClient
 			},
 			mockRespID:  []byte(`"1"`),
@@ -411,8 +411,8 @@ func TestUpdateUser_UserResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "PUT", "users/1", data).Return([]byte(`"1"`), nil)
-				mockClient.On("Do", mock.Anything, "GET", "users/1", mock.Anything).Return([]byte(`{"ID": "1", "Email": "updated_victor"}`), nil)
+				mockClient.On("Do", mock.Anything, "PUT", "/users/1", data).Return([]byte(`"1"`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/users/1", mock.Anything).Return([]byte(`{"ID": "1", "Email": "updated_victor"}`), nil)
 				return mockClient
 			},
 			mockRespGet: []byte(`{"ID": "1", "Email": "updated_victor"}`),
@@ -454,7 +454,7 @@ func TestUpdateUser_UserResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "PUT", "users/1", data).Return([]byte(`"1"`), errors.New("failed to update user"))
+				mockClient.On("Do", mock.Anything, "PUT", "/users/1", data).Return([]byte(`"1"`), errors.New("failed to update user"))
 				return mockClient
 			},
 			mockRespGet: nil,
@@ -476,8 +476,8 @@ func TestUpdateUser_UserResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "PUT", "users/1", data).Return([]byte(`"1"`), nil)
-				mockClient.On("Do", mock.Anything, "GET", "users/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch user"))
+				mockClient.On("Do", mock.Anything, "PUT", "/users/1", data).Return([]byte(`"1"`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/users/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch user"))
 				return mockClient
 			},
 			mockRespGet: nil,
@@ -540,8 +540,8 @@ func TestDeleteUser_UserResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", "users/1", mock.Anything).Return([]byte(`{"ID": "1", "Email": "victor"}`), nil)
-				mockClient.On("Do", mock.Anything, "DELETE", "users/1", mock.Anything).Return([]byte(`"1"`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/users/1", mock.Anything).Return([]byte(`{"ID": "1", "Email": "victor"}`), nil)
+				mockClient.On("Do", mock.Anything, "DELETE", "/users/1", mock.Anything).Return([]byte(`"1"`), nil)
 				return mockClient
 			},
 			mockRespGet: []byte(`{"ID": "1", "Email": "victor"}`),
@@ -557,7 +557,7 @@ func TestDeleteUser_UserResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", "users/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch user"))
+				mockClient.On("Do", mock.Anything, "GET", "/users/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch user"))
 				return mockClient
 			},
 			mockRespGet: nil,
@@ -575,8 +575,8 @@ func TestDeleteUser_UserResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", "users/1", mock.Anything).Return([]byte(`{"ID": "1", "Email": "victor"}`), nil)
-				mockClient.On("Do", mock.Anything, "DELETE", "users/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to delete user"))
+				mockClient.On("Do", mock.Anything, "GET", "/users/1", mock.Anything).Return([]byte(`{"ID": "1", "Email": "victor"}`), nil)
+				mockClient.On("Do", mock.Anything, "DELETE", "/users/1", mock.Anything).Return([]byte(`"1"`), errors.New("failed to delete user"))
 				return mockClient
 			},
 			mockRespGet: []byte(`{"ID": "1", "Email": "victor"}`),
@@ -592,7 +592,7 @@ func TestDeleteUser_UserResolver(t *testing.T) {
 			},
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", "users/1", mock.Anything).Return([]byte(`invalid_json`), nil)
+				mockClient.On("Do", mock.Anything, "GET", "/users/1", mock.Anything).Return([]byte(`invalid_json`), nil)
 				return mockClient
 			},
 			mockRespGet: []byte(`invalid_json`),
@@ -650,7 +650,7 @@ func TestGetList_UserResolver(t *testing.T) {
 			listID: listID,
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("lists/%s", listID), mock.Anything).Return([]byte(`{"ID": "101", "Name": "Test List"}`), nil)
+				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("/lists/%s", listID), mock.Anything).Return([]byte(`{"ID": "101", "Name": "Test List"}`), nil)
 				return mockClient
 			},
 			mockConvert: func() *automock.ListConverter {
@@ -668,7 +668,7 @@ func TestGetList_UserResolver(t *testing.T) {
 			listID: listID,
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("lists/%s", listID), mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch list"))
+				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("/lists/%s", listID), mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch list"))
 				return mockClient
 			},
 			mockConvert: func() *automock.ListConverter {
@@ -684,7 +684,7 @@ func TestGetList_UserResolver(t *testing.T) {
 			listID: listID,
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("lists/%s", listID), mock.Anything).Return([]byte(`invalid_json`), nil)
+				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("/lists/%s", listID), mock.Anything).Return([]byte(`invalid_json`), nil)
 				return mockClient
 			},
 			mockConvert: func() *automock.ListConverter {
@@ -746,7 +746,7 @@ func TestGetUser_UserResolver(t *testing.T) {
 			userID: userID,
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("users/%s", userID), mock.Anything).Return([]byte(`{"ID": "1", "Email": "test@example.com"}`), nil)
+				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("/users/%s", userID), mock.Anything).Return([]byte(`{"ID": "1", "Email": "test@example.com"}`), nil)
 				return mockClient
 			},
 			mockConvert: func() *automock.UserConverter {
@@ -764,7 +764,7 @@ func TestGetUser_UserResolver(t *testing.T) {
 			userID: userID,
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("users/%s", userID), mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch user"))
+				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("/users/%s", userID), mock.Anything).Return([]byte(`"1"`), errors.New("failed to fetch user"))
 				return mockClient
 			},
 			mockConvert: func() *automock.UserConverter {
@@ -780,7 +780,7 @@ func TestGetUser_UserResolver(t *testing.T) {
 			userID: userID,
 			mockDo: func() *mock2.ClientMock {
 				mockClient := new(mock2.ClientMock)
-				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("users/%s", userID), mock.Anything).Return([]byte(`invalid_json`), nil)
+				mockClient.On("Do", mock.Anything, "GET", fmt.Sprintf("/users/%s", userID), mock.Anything).Return([]byte(`invalid_json`), nil)
 				return mockClient
 			},
 			mockConvert: func() *automock.UserConverter {
