@@ -2,9 +2,18 @@
 
 A repository for my project for the Modern DevOps Practices course at FMI.
 
-# Todo List App
+## Todo List App
 
-The classic todo list app should support creating different lists of todos. Each list should have its own name and description. In the lists, there are todos that are separate from the others. The access to lists should be managed in the database by user emails. Users should be able to log in to the application via a GitHub account. The users should be part of a specific GitHub organization in order to be able to log in.
+The classic todo list app should support creating 
+different lists of todos. 
+Each list should have its own name and description. 
+In the lists, there are todos that are separate from the others. 
+The access to lists should be managed in the 
+database by user emails. 
+Users should be able to log in to the application 
+via a GitHub account. 
+The users should be part of a specific GitHub organization 
+in order to be able to log in.
 
 ## Implementation
 
@@ -33,7 +42,8 @@ The GitHub organization should have 3 teams - **readers**, **writers**, and **ad
   - Participants can create/update/delete todos in the todo lists they are part of.
   - Participants can create new Todo lists and will be part of them by default.
   - Participants can add users to Todo lists if they are the owner of the Todo list.
-- **Admins**: Participants can do all of the above even without being part of a Todo list.
+- **Admins**: Participants can do all of the above even without 
+ being part of a Todo list.
 
 ### Architecture Overview
 
@@ -64,8 +74,10 @@ The GitHub organization should have 3 teams - **readers**, **writers**, and **ad
 
 - **Security**:
   - Implement tenancy:
-    - Define Users table and add "ownership" to the lists so that only the owners can modify and view the lists.
-    - Use a tenant header that is propagated from the GraphQL Facade to the REST API and have the service and repo layer take the user into consideration.
+    - Define Users table and add "ownership" to the lists so that only 
+    the owners can modify and view the lists.
+    - Use a tenant header that is propagated from the GraphQL Facade 
+    to the REST API and have the service and repo layer take the user into consideration.
   - **Auth/Authz**:
     - Define 3 GitHub organizations - read/write/admin.
     - Create a GitHub OAuth app.
@@ -79,7 +91,8 @@ The GitHub organization should have 3 teams - **readers**, **writers**, and **ad
     - Create a new List.
     - Update existing List (name, description).
     - Delete a List.
-  - Upon clicking a List, open a new page that shows all the todos for this List:
+  - Upon clicking a List, open a new page that shows 
+    all the todos for this List:
     - Add a Todo.
     - Mark todo as completed.
     - Delete todo.
