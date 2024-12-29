@@ -153,18 +153,43 @@ jobs:
 
   build-and-scan-ui:
     needs: [build-rest, build-graphql]
-    uses: ./.github/workflows/build-and-scan.yml
-    with:
-      image: 'victoruzunov/ui:project'
-      directory: 'ui'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build Docker image
+        run: |
+          cd ui
+          make build
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'victoruzunov/ui:project'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
 
   build-and-scan-migrate:
     needs: [build-rest, build-graphql]
-    uses: ./.github/workflows/build-and-scan.yml
-    with:
-      image: 'victoruzunov/migrate:project'
-      directory: 'migrations'
-
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build Docker image
+        run: |
+          cd migrations
+          make build
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'victoruzunov/migrate:project'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
 
   push-docker-images:
     needs: [build-and-scan-todoservice, build-and-scan-graphql, build-and-scan-ui, build-and-scan-migrate]
