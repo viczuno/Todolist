@@ -107,6 +107,8 @@ jobs:
     needs: [build-rest, build-graphql]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Create .env file for REST service
         run: |
           cd todoservice
@@ -121,6 +123,8 @@ jobs:
     needs: [build-rest, build-graphql]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Create .env file for GraphQL service
         run: |
           cd graphqlServer
