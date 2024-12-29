@@ -152,7 +152,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
   push-docker-images:
-    needs: [build-and-scan-todoservice, build-and-scan-graphql, build-and-scan-ui, build-and-scan-migrate]
+    needs: [build-and-scan-todoservice, build-and-scan-graphql]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
