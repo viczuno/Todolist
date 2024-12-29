@@ -1,0 +1,40 @@
+name: Linting and Formatting Checks
+
+on:
+  workflow_call:
+    inputs:
+      path:
+        required: true
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
+jobs:
+  lint-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.22.5'
+
+      - name: Run Go fmt
+        run: |
+          cd ${{ inputs.path }}
+          go fmt ./...
+
+      - name: Run Go vet
+        run: |
+          cd ${{ inputs.path }}
+          go vet ./...
+
+      - name: Run GolangCI-Lint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.54.2
+          cd ${{ inputs.path }}
+          golangci-lint run

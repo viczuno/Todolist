@@ -1,0 +1,39 @@
+name: Reusable Build Workflow
+
+on:
+  workflow_call:
+    inputs:
+      path:
+        required: true
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.22.5'
+
+      - name: Install dependencies
+        run: |
+          cd ${{ inputs.path }}
+          go mod tidy
+
+      - name: Run tests
+        run: |
+          cd ${{ inputs.path }}
+          go test -v ./...
+
+      - name: Build
+        run: |
+          cd ${{ inputs.path }}/cmd/todoapp
+          go build -o myapp .
