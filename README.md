@@ -1,5 +1,6 @@
 # DevOps project
-A repository for my project for Modern Devops Practises course at FMI
+
+A repository for my project for the Modern DevOps Practices course at FMI.
 
 # Todo List App
 
@@ -25,7 +26,7 @@ Implement a Todo microservice that supports the following:
 
 ### Requirements for GitHub Organization
 
-The GitHub organization should have 3 teams - **readers, writers, and admins**:
+The GitHub organization should have 3 teams - **readers**, **writers**, and **admins**:
 
 - **Readers**: Participants can read todo lists they are part of.
 - **Writers**:
@@ -109,5 +110,5 @@ The GitHub organization should have 3 teams - **readers, writers, and admins**:
 
 ## Set up
 
-- **run ./setup.sh 8000 {cluster-name}**
-- **UI runs on port http://localhost:8000/**
+- **Run `./setup.sh 8000 {cluster-name}`**
+- **UI runs on port `http://localhost:8000/`**
