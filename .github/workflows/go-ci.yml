@@ -71,35 +71,65 @@ jobs:
   snyk-test:
     runs-on: ubuntu-latest
     needs: [ build-rest, build-graphql ]
+    permissions:
+      packages: write
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run Snyk for todoservice
-        uses: ./.github/workflows/snyk-test.yml
+      - name: Set up Go
+        uses: actions/setup-go@v4
         with:
-          directory: 'todoservice'
+          go-version: '1.22.5'
+      - name: Install dependencies
+        run: |
+          cd todoservice
+          go mod tidy
+          cd ../graphqlServer
+          go mod tidy
+      - name: Install Snyk
+        run: npm install -g snyk
+      - name: Authenticate Snyk
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk auth $SNYK_TOKEN
 
-      - name: Run Snyk for graphqlServer
-        uses: ./.github/workflows/snyk-test.yml
-        with:
-          directory: 'graphqlServer'
+      - name: Run Snyk to check for vulnerabilities
+        run: |
+          cd todoservice
+          snyk test --file=go.mod --severity-threshold=high
+          cd ../graphqlServer
+          snyk test --file=go.mod --severity-threshold=high
 
   build-and-scan-todoservice:
     needs: [build-rest, build-graphql]
-    uses: ./.github/workflows/build-and-scan.yml
-    with:
-      image: 'victoruzunov/todoservice:project'
-      directory: 'todoservice'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create .env file for REST service
+        run: |
+          cd todoservice
+          echo "${{ secrets.ENV_REST_CONTENT }}" > .env
+      - name: Run reusable build workflow
+        uses: ./.github/workflows/build-and-scan.yml
+        with:
+          image: 'victoruzunov/todoservice:project'
+          directory: 'todoservice'
 
   build-and-scan-graphql:
     needs: [build-rest, build-graphql]
-    uses: ./.github/workflows/build-and-scan.yml
-    with:
-      image: 'victoruzunov/graphql:project'
-      directory: 'graphql'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create .env file for GraphQL service
+        run: |
+          cd graphqlServer
+          echo "${{ secrets.ENV_GRAPHQL_CONTENT }}" > .env
+      - name: Run reusable build workflow
+        uses: ./.github/workflows/build-and-scan.yml
+        with:
+          image: 'victoruzunov/graphql:project'
+          directory: 'graphqlServer'
 
   build-and-scan-ui:
     needs: [build-rest, build-graphql]
@@ -113,11 +143,11 @@ jobs:
     uses: ./.github/workflows/build-and-scan.yml
     with:
       image: 'victoruzunov/migrate:project'
-      directory: 'migrate'
+      directory: 'migrations'
 
 
   push-docker-images:
-    needs: [build-rest, build-graphql]
+    needs: [build-and-scan-todoservice, build-and-scan-graphql, build-and-scan-ui, build-and-scan-migrate]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
