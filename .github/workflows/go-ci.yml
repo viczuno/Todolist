@@ -222,13 +222,13 @@ jobs:
           curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.23.3 sh -
           sudo mv istio-1.23.3/bin/istioctl /usr/local/bin/      
 
+      - name: Install Istio
+        run: |
+          istioctl install --set profile=default --yes
+
       - name: Verify Istio Version
         run: |
           istioctl version
-
-      - name: Install Istio
-        run: |
-          istioctl install --set profile=default
 
       - name: Create Namespace and Enable Istio Injection
         run: |
