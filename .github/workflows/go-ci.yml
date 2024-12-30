@@ -198,3 +198,40 @@ jobs:
         run: |
           make push
         working-directory: ui
+
+  deploy-to-k3d:
+    needs: [ push-docker-images ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install k3d
+        run: |
+          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+
+      - name: Create k3d Cluster
+        run: |
+          k3d cluster create my-cluster \
+            --port 8080:80@loadbalancer \
+            --port 8443:443@loadbalancer \
+            --k3s-arg "--disable=traefik@server:*" \
+            --k3s-arg '--kube-apiserver-arg=anonymous-auth=true@server:*'
+
+      - name: Create Namespace
+        run: |
+          kubectl create namespace todoapp-system
+
+      - name: Deploy Helm Chart
+        run: |
+          helm install todoapp ${HOME}/intern-project/charts/todoapp \
+            --namespace todoapp-system --create-namespace
+
+      - name: Verify Application Deployment
+        run: |
+          kubectl get pods -n todoapp-system
+
+      - name: Tear Down k3d Cluster
+        if: always()
+        run: |
+          k3d cluster delete my-cluster
