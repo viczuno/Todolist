@@ -200,7 +200,6 @@ jobs:
         working-directory: ui
 
   deploy-to-k3d:
-    needs: [ push-docker-images ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
