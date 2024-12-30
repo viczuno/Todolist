@@ -220,9 +220,17 @@ jobs:
       - name: Install Istioctl
         run: |
           curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.23.3 sh -
-          sudo mv istio-1.23.3/bin/istioctl /usr/local/bin/      
+          sudo mv istio-1.23.3/bin/istioctl /usr/local/bin/
+          istioctl install --set profile=default -y
 
-    
+      - name: Verify Istio CRDs
+        run: |
+          kubectl get crds | grep istio
+          
+
+      - name: Wait for Istio System
+        run: |
+          kubectl wait --for=condition=available deployment --all -n istio-system --timeout=300s    
 
       - name: Create Namespace and Enable Istio Injection
         run: |
