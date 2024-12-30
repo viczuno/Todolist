@@ -223,7 +223,8 @@ jobs:
 
       - name: Deploy Helm Chart
         run: |
-          helm install todoapp ${HOME}/intern-project/charts/todoapp \
+          cd charts/todoapp
+          helm install todoapp . \
             --namespace todoapp-system --create-namespace
 
       - name: Verify Application Deployment
