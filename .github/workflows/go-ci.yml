@@ -104,8 +104,8 @@ jobs:
           cd ../graphqlServer
           snyk test --file=go.mod --severity-threshold=high
 
-  build-and-scan-todoservice:
-    needs: [build-rest, build-graphql]
+  trivy-scan-todoservice:
+    needs: [snyk-test, sonar-cloud-test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -128,7 +128,7 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
-  build-and-scan-graphql:
+  trivy-scan-graphql:
     needs: [build-rest, build-graphql]
     runs-on: ubuntu-latest
     steps:
@@ -153,7 +153,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
   push-docker-images:
-    needs: [build-and-scan-todoservice, build-and-scan-graphql]
+    needs: [trivy-scan-todoservice, trivy-scan-graphql]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
@@ -198,3 +198,58 @@ jobs:
         run: |
           make push
         working-directory: ui
+
+  deploy-to-k3d:
+    needs: push-docker-images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install k3d
+        run: |
+          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+
+      - name: Create k3d Cluster
+        run: |
+          k3d cluster create my-cluster \
+            --port 8080:80@loadbalancer \
+            --port 8443:443@loadbalancer \
+            --k3s-arg "--disable=traefik@server:*" \
+            --k3s-arg '--kube-apiserver-arg=anonymous-auth=true@server:*'
+
+      - name: Install Istioctl
+        run: |
+          curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.23.3 sh -
+          sudo mv istio-1.23.3/bin/istioctl /usr/local/bin/
+          istioctl install --set profile=default -y
+
+      - name: Verify Istio CRDs
+        run: |
+          kubectl get crds | grep istio
+          
+
+      - name: Wait for Istio System
+        run: |
+          kubectl wait --for=condition=available deployment --all -n istio-system --timeout=300s    
+
+      - name: Create Namespace and Enable Istio Injection
+        run: |
+          kubectl create namespace todoapp-system
+          kubectl label namespace todoapp-system istio-injection=enabled
+
+      - name: Deploy Helm Chart
+        run: |
+          cd charts/todoapp
+          helm install todoapp . \
+            --namespace todoapp-system --create-namespace
+
+      - name: Verify Application Deployment
+        run: |
+          kubectl get pods -n todoapp-system
+
+      - name: Tear Down k3d Cluster
+        if: always()
+        run: |
+          k3d cluster delete my-cluster
+  
