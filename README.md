@@ -1,6 +1,31 @@
-# DevOps project
+# TodoList project
 
 Todoist-style REST + GraphQL API: secure GitHub OAuth login, JWT & refresh-token auth, role-based access control.
+
+## 🚀 Quick Start
+
+**New to this project? Start here:**
+
+1. Copy the configuration template:
+   ```bash
+   cp config.example.yaml config.yaml
+   ```
+
+2. Set up your GitHub OAuth App and update `config.yaml` with your credentials
+
+3. Generate security keys:
+   ```bash
+   ./generate-keys.sh
+   ```
+
+4. Run the setup script:
+   ```bash
+   ./setup.sh
+   ```
+
+**📖 For detailed setup instructions, see [SETUP_GUIDE.md](SETUP_GUIDE.md)**
+
+---
 
 ## Todo List App
 

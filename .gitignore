@@ -1,8 +1,38 @@
-../.idea
-.idea
-.env
-node_modules/
-todoapp-chart/templates/secret.yaml
-graphqlServer/main
-todoservice/main
+# Configuration files with secrets
+config.yaml
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Kubernetes
+*.kubeconfig
+
+# Docker
+.dockerignore
+
+# Node modules
+node_modules/
+dist/
+build/
+
+# Logs
+*.log
+
