@@ -143,104 +143,105 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
-  push-docker-images:
-    needs: [trivy-scan-todoservice, trivy-scan-graphql]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  # Uncomment when want to check mock set up with deploy on local cluster
+  # push-docker-images:
+  #   needs: [trivy-scan-todoservice, trivy-scan-graphql]
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
 
-      - name: Set up Docker for the job
-        uses: docker/setup-buildx-action@v2
+  #     - name: Set up Docker for the job
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Log in to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+  #     - name: Log in to DockerHub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Create .env file for REST service
-        run: |
-          cd todoservice
-          echo "${{ secrets.ENV_REST_CONTENT }}" > .env
+  #     - name: Create .env file for REST service
+  #       run: |
+  #         cd todoservice
+  #         echo "${{ secrets.ENV_REST_CONTENT }}" > .env
 
-      - name: Create .env file for GraphQL service
-        run: |
-          cd graphqlServer
-          echo "${{ secrets.ENV_GRAPHQL_CONTENT }}" > .env
+  #     - name: Create .env file for GraphQL service
+  #       run: |
+  #         cd graphqlServer
+  #         echo "${{ secrets.ENV_GRAPHQL_CONTENT }}" > .env
 
-      - name: Build and push Docker image for REST service
-        run: |
-          make push
-        working-directory: todoservice
+  #     - name: Build and push Docker image for REST service
+  #       run: |
+  #         make push
+  #       working-directory: todoservice
 
-      - name: Build and push Docker image for GraphQL service
-        run: |
-          make push
-        working-directory: graphqlServer
+  #     - name: Build and push Docker image for GraphQL service
+  #       run: |
+  #         make push
+  #       working-directory: graphqlServer
 
-      - name: Build and push Docker image for migrations
-        run: |
-          make push
-        working-directory: migrations
+  #     - name: Build and push Docker image for migrations
+  #       run: |
+  #         make push
+  #       working-directory: migrations
 
-      - name: Build and push Docker image for UI
-        run: |
-          make push
-        working-directory: ui
+  #     - name: Build and push Docker image for UI
+  #       run: |
+  #         make push
+  #       working-directory: ui
 
-  deploy-to-k3d:
-    needs: push-docker-images
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  # deploy-to-k3d:
+  #   needs: push-docker-images
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Install k3d
-        run: |
-          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+  #     - name: Install k3d
+  #       run: |
+  #         curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
-      - name: Create k3d Cluster
-        run: |
-          k3d cluster create my-cluster \
-            --port 8080:80@loadbalancer \
-            --port 8443:443@loadbalancer \
-            --k3s-arg "--disable=traefik@server:*" \
-            --k3s-arg '--kube-apiserver-arg=anonymous-auth=true@server:*'
+  #     - name: Create k3d Cluster
+  #       run: |
+  #         k3d cluster create my-cluster \
+  #           --port 8080:80@loadbalancer \
+  #           --port 8443:443@loadbalancer \
+  #           --k3s-arg "--disable=traefik@server:*" \
+  #           --k3s-arg '--kube-apiserver-arg=anonymous-auth=true@server:*'
 
-      - name: Install Istioctl
-        run: |
-          curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.23.3 sh -
-          sudo mv istio-1.23.3/bin/istioctl /usr/local/bin/
-          istioctl install --set profile=default -y
+  #     - name: Install Istioctl
+  #       run: |
+  #         curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.23.3 sh -
+  #         sudo mv istio-1.23.3/bin/istioctl /usr/local/bin/
+  #         istioctl install --set profile=default -y
 
-      - name: Verify Istio CRDs
-        run: |
-          kubectl get crds | grep istio
+  #     - name: Verify Istio CRDs
+  #       run: |
+  #         kubectl get crds | grep istio
           
 
-      - name: Wait for Istio System
-        run: |
-          kubectl wait --for=condition=available deployment --all -n istio-system --timeout=300s    
+  #     - name: Wait for Istio System
+  #       run: |
+  #         kubectl wait --for=condition=available deployment --all -n istio-system --timeout=300s    
 
-      - name: Create Namespace and Enable Istio Injection
-        run: |
-          kubectl create namespace todoapp-system
-          kubectl label namespace todoapp-system istio-injection=enabled
+  #     - name: Create Namespace and Enable Istio Injection
+  #       run: |
+  #         kubectl create namespace todoapp-system
+  #         kubectl label namespace todoapp-system istio-injection=enabled
 
-      - name: Deploy Helm Chart
-        run: |
-          cd charts/todoapp
-          helm install todoapp . \
-            --namespace todoapp-system --create-namespace
+  #     - name: Deploy Helm Chart
+  #       run: |
+  #         cd charts/todoapp
+  #         helm install todoapp . \
+  #           --namespace todoapp-system --create-namespace
 
-      - name: Verify Application Deployment
-        run: |
-          kubectl get pods -n todoapp-system
+  #     - name: Verify Application Deployment
+  #       run: |
+  #         kubectl get pods -n todoapp-system
 
-      - name: Tear Down k3d Cluster
-        if: always()
-        run: |
-          k3d cluster delete my-cluster
+  #     - name: Tear Down k3d Cluster
+  #       if: always()
+  #       run: |
+  #         k3d cluster delete my-cluster
   
