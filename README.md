@@ -1,4 +1,4 @@
-# TodoList Project - Пълна Документация
+# TodoList Project
 
 ## Съдържание
 
