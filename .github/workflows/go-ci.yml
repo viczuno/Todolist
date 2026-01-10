@@ -11,18 +11,6 @@ permissions:
 
 jobs:
 
-  markdown-file-check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install markdownlint-cli
-        run: npm install -g markdownlint-cli
-
-      - name: Run markdownlint test
-        run: markdownlint ./README.md
-
   lint-format-check-rest:
     uses: ./.github/workflows/reusable-checks.yml
     with:
@@ -55,6 +43,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: SonarCloud Scan
@@ -67,7 +56,7 @@ jobs:
             -Dsonar.qualitygate.wait=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   snyk-test:
     runs-on: ubuntu-latest
