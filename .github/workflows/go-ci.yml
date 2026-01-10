@@ -95,7 +95,7 @@ jobs:
           snyk test --file=go.mod --severity-threshold=high
 
   trivy-scan-todoservice:
-    needs: [snyk-test, sonar-cloud-test]
+    needs: [snyk-test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
