@@ -1,0 +1,79 @@
+# TodoList Application Configuration
+# ==================================
+# Copy this file to 'config.yaml' and fill in your specific values
+# DO NOT commit config.yaml to version control (it's in .gitignore)
+
+# Cluster Configuration
+# ----------------------
+cluster:
+  name: todoapp-cluster
+  port: 8000
+
+# GitHub OAuth Application
+# -------------------------
+# Create your GitHub OAuth App at: https://github.com/settings/developers
+# For local development, use these settings:
+#   Homepage URL: http://localhost:<port>
+#   Authorization callback URL: http://localhost:<port>/login/github/callback
+github:
+  oauth:
+    clientId: "YOUR_GITHUB_CLIENT_ID"
+    clientSecret: "YOUR_GITHUB_CLIENT_SECRET"
+    redirectUrl: "http://localhost:8000/login/github/callback"
+    scopes: "read:org,user"
+
+  organization: "YOUR_GITHUB_ORGANIZATION"
+
+# Security Keys
+# -------------
+# Generate secure random keys for production:
+#   OAuth State: openssl rand -base64 32
+#   JWT Key: openssl rand -base64 32
+security:
+  oauth2State: "GENERATE_RANDOM_STRING_HERE"
+  jwtKey: "GENERATE_RANDOM_JWT_KEY_HERE"
+
+# Database Configuration
+# ----------------------
+database:
+  user: "postgres"
+  password: "YOUR_DB_PASSWORD"
+  name: "todolist_db"
+  host: "localhost"
+  port: "5432"
+  sslmode: "disable"
+
+# Docker Images
+# -------------
+# Change these if you want to use your own Docker registry
+docker:
+  registry: "victoruzunov"
+  tags:
+    rest: "project"
+    graphql: "project"
+    migrations: "project"
+    ui: "latest"
+
+# Application Settings
+# --------------------
+app:
+  log:
+    level: "debug"
+    format: "text"
+
+  resources:
+    rest:
+      limits:
+        cpu: "1"
+        memory: "256Mi"
+      requests:
+        cpu: "512m"
+        memory: "128Mi"
+    graphql:
+      limits:
+        cpu: "1"
+        memory: "256Mi"
+      requests:
+        cpu: "512m"
+        memory: "128Mi"
+
