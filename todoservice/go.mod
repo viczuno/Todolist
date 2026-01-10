@@ -3,7 +3,7 @@ module github.com/Victor-Uzunov/devops-project/todoservice
 go 1.24.6
 
 require (
-	github.com/golang-jwt/jwt/v4 v4.5.1
+	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/jmoiron/sqlx v1.4.0
