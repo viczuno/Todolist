@@ -1,6 +1,6 @@
 module github.com/Victor-Uzunov/devops-project/graphqlServer
 
-go 1.25.5
+go 1.26.0
 
 require (
 	github.com/99designs/gqlgen v0.17.49
